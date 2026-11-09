@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Фигурки на заказ — работы</title>
+<style>
+  /* Reference: Grafik — design annual on warm paper (#f0eeeb).
+     Hairline 1px ink grid instead of gaps, one grotesk typeface,
+     zero gradients, zero shadows, zero rounded corners, zero glow. */
+  :root {
+    --paper:#f0eeeb; --ink:#000; --bone:#ffffff;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; border-radius:0 !important; }
+  html { color-scheme:light; }
+  body { background:var(--paper); color:var(--ink);
+         font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+         font-weight:400; -webkit-font-smoothing:antialiased; }
+  a { color:var(--ink); text-decoration:none; }
+  .wrap { max-width:1360px; margin:0 auto; padding:0 32px; }
+
+  .nav { display:flex; justify-content:space-between; align-items:baseline;
+         padding-top:26px; padding-bottom:26px;
+         border-bottom:1px solid var(--ink); font-size:20px; letter-spacing:-.2px; }
+  .nav a:hover { text-decoration:underline; text-underline-offset:4px; }
+
+  .head { padding-top:64px; padding-bottom:56px; }
+  h1 { font-size:clamp(38px, 6vw, 64px); font-weight:400; letter-spacing:-1.2px; line-height:1.02; }
+
+  #grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+          grid-auto-rows:6px; grid-auto-flow:row dense;
+          gap:1px; }
+  .ph { position:relative; overflow:hidden; background:var(--bone);
+        cursor:zoom-in; }
+  .ph img { width:100%; height:100%; object-fit:cover; display:block;
+            transition:opacity .12s linear; }
+  .ph:hover img { opacity:.8; }
+  .ph .play { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .ph .play::before { content:"▶"; font-size:20px; color:#fff; background:#000; opacity:.75;
+            padding:15px 17px 15px 20px; }
+
+  .foot { display:flex; justify-content:space-between; align-items:baseline;
+          margin-top:56px; padding-top:22px; padding-bottom:48px;
+          border-top:1px solid var(--ink); font-size:14px; letter-spacing:.2px; }
+  .foot a:hover { text-decoration:underline; }
+
+  /* лайтбокс — та же бумага, hairline-линии, текстовые стрелки */
+  #lb { position:fixed; inset:0; background:var(--paper); z-index:30; display:none;
+        flex-direction:column; }
+  #lb .lbtop { display:flex; justify-content:space-between; padding:22px 32px;
+               border-bottom:1px solid var(--ink); font-size:16px; }
+  #lb .lbtop button { background:none; border:none; font:inherit; color:var(--ink);
+                      cursor:pointer; letter-spacing:.2px; padding:0; }
+  #lb .lbtop button:hover { text-decoration:underline; }
+  #lb .lbstage { flex:1; display:flex; align-items:center; justify-content:center;
+                 padding:28px 32px; overflow:hidden; }
+  #lb .lbstage img, #lb .lbstage iframe { max-width:100%; max-height:100%;
+        border:1px solid var(--ink); background:#000; }
+  #lb .lbstage iframe { width:min(92vw, 1000px); height:min(70vh, 620px); }
+  #lb .lbbot { display:flex; justify-content:space-between; align-items:center;
+               padding:18px 32px; border-top:1px solid var(--ink); font-size:16px; }
+  #lb .lbbot button { background:none; border:none; font:inherit; cursor:pointer;
+                      color:var(--ink); padding:0; }
+  #lb .lbbot button:hover { text-decoration:underline; }
+  @media (max-width:640px) { .wrap { padding:0 16px; } .nav { font-size:17px; } }
+</style>
+</head>
+<body>
+<header class="wrap nav">
+  <span>Фигурки на заказ</span>
+  <a href="https://www.avito.ru/sankt-peterburg/predlozheniya_uslug/izgotovlenie_figurki_na_zakaz_7941127708" target="_blank" rel="noopener">Заказать — Авито&#8599;</a>
+</header>
+<section class="wrap head">
+  <h1>Мои работы</h1>
+</section>
+<main class="wrap">
+  <div id="grid"></div>
+</main>
+<footer class="wrap foot">
+  <span>по всем вопросам — <a href="https://www.avito.ru/sankt-peterburg/predlozheniya_uslug/izgotovlenie_figurki_na_zakaz_7941127708" target="_blank" rel="noopener">Авито</a></span>
+  <span>ручная работа</span>
+</footer>
+
+<div id="lb">
+  <div class="lbtop">
+    <span id="count"></span>
+    <button id="close" title="Esc">закрыть ✕</button>
+  </div>
+  <div class="lbstage" id="lbmedia"></div>
+  <div class="lbbot">
+    <span class="cap" id="lbcap"></span>
+    <span>
+      <button id="prev">&#8592; пред</button>
+      &nbsp;&nbsp;
+      <button id="next">след &#8594;</button>
+    </span>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+(() => {
+  const grid = document.getElementById("grid");
+
+  PHOTOS.forEach((p, idx) => {
+    const d = document.createElement("div"); d.className = "ph"; d.dataset.idx = idx;
+    const img = document.createElement("img");
+    img.loading = "lazy"; img.src = p.t || p.f; img.alt = "";
+    d.append(img);
+    if (p.kind === "video") { const pl = document.createElement("div"); pl.className = "play"; d.append(pl); }
+    d.addEventListener("click", () => openLb(idx));
+    grid.append(d);
+  });
+
+  /* masonry: высота ячейки = пропорция фото, строка сетки 6px + 1px линия */
+  const ROWPX = 6;
+  function relayout() {
+    const first = grid.querySelector(".ph");
+    if (!first) return;
+    const cw = first.getBoundingClientRect().width;
+    for (const el of grid.children) {
+      const p = PHOTOS[+el.dataset.idx];
+      const ratio = (p.h || 960) / (p.w || 720);
+      const span = Math.max(2, Math.round((cw * ratio - 1) / (ROWPX + 1)));
+      el.style.gridRowEnd = "span " + span;
+    }
+  }
+  relayout();
+  let rsT;
+  window.addEventListener("resize", () => { clearTimeout(rsT); rsT = setTimeout(relayout, 120); });
+
+  const lb = document.getElementById("lb");
+  function openLb(i) {
+    const p = PHOTOS[i];
+    document.getElementById("lbmedia").innerHTML = (p.kind === "video" && p.embed)
+      ? `<iframe src="${p.embed}" allow="autoplay; fullscreen" allowfullscreen></iframe>`
+      : `<img src="${p.f}" alt="">`;
+    document.getElementById("lbcap").textContent = p.kind === "video" ? "видео" : "";
+    document.getElementById("count").textContent = (i + 1) + " / " + PHOTOS.length;
+    lb.style.display = "flex"; lb.dataset.pos = i;
+  }
+  document.getElementById("close").onclick = () => { lb.style.display = "none"; document.getElementById("lbmedia").innerHTML = ""; };
+  document.getElementById("prev").onclick = () => openLb((+lb.dataset.pos - 1 + PHOTOS.length) % PHOTOS.length);
+  document.getElementById("next").onclick = () => openLb((+lb.dataset.pos + 1) % PHOTOS.length);
+  document.addEventListener("keydown", e => {
+    if (lb.style.display === "none" || !lb.style.display) return;
+    if (e.key === "Escape") document.getElementById("close").onclick();
+    if (e.key === "ArrowLeft") document.getElementById("prev").onclick();
+    if (e.key === "ArrowRight") document.getElementById("next").onclick();
+  });
+})();
+</script>
+</body>
+</html>
