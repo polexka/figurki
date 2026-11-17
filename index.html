@@ -3,152 +3,665 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Фигурки на заказ — работы</title>
+<title>Фигурка по фото на заказ — подарок ручной работы</title>
+<meta name="description" content="Фигурки людей и питомцев по фотографии: 3D-печать и ручная роспись. Одиночные, пары, семьи, диорамы. Согласуем модель до печати, доставка по России и СНГ.">
+<meta name="theme-color" content="#fdeef3">
+<!-- TODO: после публикации укажите адрес сайта в canonical и og:url, а og:image сделайте абсолютной ссылкой -->
+<link rel="canonical" href="https://example.com/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:title" content="Фигурка по фото — подарок, который не забудут">
+<meta property="og:description" content="Фигурки людей и питомцев по фотографии. 3D-печать и ручная роспись, доставка по России и СНГ.">
+<meta property="og:url" content="https://example.com/">
+<meta property="og:image" content="photos/full/50967535851.cf5c3d6a0c3e40d085b5763493ef3d5f.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;800&display=swap">
 <style>
-  /* Reference: Grafik — design annual on warm paper (#f0eeeb).
-     Hairline 1px ink grid instead of gaps, one grotesk typeface,
-     zero gradients, zero shadows, zero rounded corners, zero glow. */
+  /* Стиль: «kawaii pastel» + «scrapbook».
+     Розовая основа и ягодный текст; акценты из скрапбука — полароиды,
+     washi-скотч, рукописные заметки (Caveat), крафт-бумага и «строчка». */
   :root {
-    --paper:#f0eeeb; --ink:#000; --bone:#ffffff;
+    --pink:#fdeef3; --pink2:#fadfe9; --blush:#f6c6d7; --cream:#fff9f5; --white:#fff;
+    --berry:#7a2e4a; --mute:#8f4a66; --hot:#e86a92; --btn:#cc4273; --btn-d:#a3305a;
+    --kraft:#e9d9bf;
+    --mint:#d4efe4; --lilac:#e7ddf7; --butter:#fcefc4; --sky:#dcecf9;
+    --t-pink:rgba(244,160,192,.75); --t-mint:rgba(150,212,190,.75);
+    --t-lilac:rgba(190,170,236,.75); --t-butter:rgba(248,210,110,.78);
+    --stitch:rgba(122,46,74,.26);
+    --shadow:0 1px 0 rgba(122,46,74,.05), 0 12px 26px -14px rgba(122,46,74,.38);
+    --ui:"Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --hand:"Caveat", "Segoe Print", "Comic Sans MS", cursive;
+    --g:32px;
   }
-  * { box-sizing:border-box; margin:0; padding:0; border-radius:0 !important; }
-  html { color-scheme:light; }
-  body { background:var(--paper); color:var(--ink);
-         font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
-         font-weight:400; -webkit-font-smoothing:antialiased; }
-  a { color:var(--ink); text-decoration:none; }
-  .wrap { max-width:1360px; margin:0 auto; padding:0 32px; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { color-scheme:light; scroll-behavior:smooth; scroll-padding-top:80px; background:var(--pink); }
+  html.lbopen { overflow:hidden; }
+  body { background:var(--pink); color:var(--berry); font-family:var(--ui);
+         font-weight:400; font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased;
+         overflow-x:hidden; }
+  main { overflow-x:clip; }
+  a { color:inherit; text-decoration:none; }
+  button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+  img { max-width:100%; }
+  b, strong { font-weight:800; }
+  .wrap { max-width:1280px; margin:0 auto; padding:0 var(--g); }
+  :focus-visible { outline:3px solid var(--btn); outline-offset:3px; border-radius:12px; }
+  .ico { width:1em; height:1em; display:inline-block; vertical-align:-.12em; flex:none; }
 
-  .nav { display:flex; justify-content:space-between; align-items:baseline;
-         padding-top:26px; padding-bottom:26px;
-         border-bottom:1px solid var(--ink); font-size:20px; letter-spacing:-.2px; }
-  .nav a:hover { text-decoration:underline; text-underline-offset:4px; }
+  /* washi-скотч: полупрозрачная полоска с рваными краями */
+  .tape { position:absolute; z-index:2; top:-13px; left:50%; width:88px; height:26px;
+          transform:translateX(-50%) rotate(-4deg); background-color:var(--t-pink);
+          background-image:repeating-linear-gradient(-45deg, rgba(255,255,255,.32) 0 5px, transparent 5px 10px);
+          clip-path:polygon(0 8%, 5% 0, 12% 6%, 20% 0, 80% 4%, 88% 0, 95% 6%, 100% 0, 97% 50%, 100% 100%, 92% 94%, 84% 100%, 16% 96%, 8% 100%, 0 94%, 3% 50%);
+          pointer-events:none; }
+  .tape.mint { background-color:var(--t-mint); }
+  .tape.lilac { background-color:var(--t-lilac); }
+  .tape.butter { background-color:var(--t-butter); }
 
-  .head { padding-top:64px; padding-bottom:56px; }
-  h1 { font-size:clamp(38px, 6vw, 64px); font-weight:400; letter-spacing:-1.2px; line-height:1.02; }
+  /* кнопки — «леденцы» */
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:50px;
+         padding:12px 26px; border-radius:999px; font-weight:800; font-size:17px; line-height:1.15;
+         text-align:center; background:var(--white); color:var(--berry); border:2px solid var(--blush);
+         box-shadow:0 4px 0 var(--blush); transition:transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
+  .btn:hover { transform:translateY(-2px); box-shadow:0 6px 0 var(--blush); }
+  .btn:active { transform:translateY(3px); box-shadow:0 1px 0 var(--blush); }
+  .btn.solid { background:var(--btn); color:#fff; border-color:var(--btn); box-shadow:0 4px 0 var(--btn-d); }
+  .btn.solid:hover { box-shadow:0 6px 0 var(--btn-d); }
+  .btn.solid:active { box-shadow:0 1px 0 var(--btn-d); }
 
-  #grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
-          grid-auto-rows:6px; grid-auto-flow:row dense;
-          gap:1px; }
-  .ph { position:relative; overflow:hidden; background:var(--bone);
-        cursor:zoom-in; }
-  .ph img { width:100%; height:100%; object-fit:cover; display:block;
-            transition:opacity .12s linear; }
-  .ph:hover img { opacity:.8; }
+  /* шапка */
+  .top { position:sticky; top:0; z-index:20; background:rgba(253,238,243,.92);
+         -webkit-backdrop-filter:saturate(1.3) blur(10px); backdrop-filter:saturate(1.3) blur(10px);
+         border-bottom:2px dashed rgba(122,46,74,.16); }
+  .top .wrap { display:flex; align-items:center; justify-content:space-between; gap:20px; height:70px; }
+  .brand { display:flex; align-items:center; gap:10px; min-height:44px; white-space:nowrap; line-height:1; }
+  .brand .ico { width:38px; height:26px; color:var(--hot); }
+  .brand b { display:block; font-size:19px; letter-spacing:-.2px; }
+  .brand small { display:block; font-family:var(--hand); font-weight:700; font-size:19px; color:var(--btn); margin-top:1px; }
+  #nav { display:flex; align-items:center; gap:4px; font-size:15.5px; font-weight:800; }
+  #nav a:not(.btn) { display:inline-flex; align-items:center; min-height:44px; padding:8px 14px; border-radius:999px; transition:background-color .15s ease; }
+  #nav a:not(.btn):hover { background:var(--white); }
+  #nav .btn { margin-left:10px; min-height:44px; padding:9px 22px; font-size:16px; }
+  #menuBtn { display:none; min-height:44px; padding:0 18px; border-radius:999px; background:var(--white);
+             border:2px solid var(--blush); font-weight:800; font-size:15px; }
+
+  /* секции */
+  .sec { padding-top:88px; padding-bottom:96px; }
+  .shead { text-align:center; margin:0 auto 48px; max-width:760px; display:flex; flex-direction:column; align-items:center; }
+  .snum { font-family:var(--hand); font-weight:700; font-size:27px; line-height:1; color:var(--btn);
+          display:inline-flex; align-items:center; gap:8px; transform:rotate(-3deg); margin-bottom:12px; }
+  .snum .ico { width:20px; height:20px; color:var(--hot); }
+  h2 { font-size:clamp(32px, 4.4vw, 50px); font-weight:800; letter-spacing:-.8px; line-height:1.08; text-transform:lowercase; }
+  h2::after { content:""; display:block; width:120px; height:12px; margin:12px auto 0;
+              background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 12'%3E%3Cpath d='M2 7 Q 9.5 1 17 7 T 32 7 T 47 7 T 62 7 T 77 7 T 92 7 T 107 7 T 118 6' fill='none' stroke='%23e86a92' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat; }
+  .slead { margin-top:16px; font-size:18px; max-width:620px; color:var(--mute); }
+
+  /* крафт-полоса с «зубчатым» краем */
+  .kraft { position:relative; background-color:var(--kraft);
+           background-image:radial-gradient(rgba(122,80,40,.07) 1px, transparent 1.5px), radial-gradient(rgba(122,80,40,.05) 1.2px, transparent 1.8px), radial-gradient(rgba(255,255,255,.3) 1px, transparent 1.6px);
+           background-size:11px 13px, 17px 19px, 23px 21px; background-position:0 0, 5px 7px, 9px 3px; }
+  .kraft::before, .kraft::after { content:""; position:absolute; left:0; right:0; height:14px; pointer-events:none; }
+  .kraft::before { top:0; background:radial-gradient(circle at 50% 0, var(--pink) 10px, transparent 10.5px) 0 0/28px 14px repeat-x; }
+  #prices { --next:var(--cream); }
+  .kraft::after { bottom:0; background:radial-gradient(circle at 50% 100%, var(--next, var(--pink)) 10px, transparent 10.5px) 0 0/28px 14px repeat-x; }
+
+  /* первый экран */
+  .hero { background-color:var(--pink);
+          background-image:radial-gradient(rgba(232,106,146,.16) 2px, transparent 2.6px); background-size:26px 26px; }
+  .hero .wrap { display:grid; grid-template-columns:1.02fr 1fr; gap:56px; align-items:center; padding-top:64px; padding-bottom:84px; }
+  .hero .txt { display:flex; flex-direction:column; gap:30px; }
+  .hello { font-family:var(--hand); font-weight:700; font-size:28px; color:var(--btn); line-height:1;
+           display:inline-flex; align-items:center; gap:8px; transform:rotate(-2deg); margin-bottom:14px; }
+  .hello .ico { width:24px; height:24px; color:var(--hot); }
+  h1 { font-size:clamp(34px, 4.6vw, 60px); font-weight:800; letter-spacing:-1.2px; line-height:1.08; }
+  h1 mark { color:inherit; background:linear-gradient(transparent 58%, var(--blush) 58%, var(--blush) 92%, transparent 92%);
+            padding:0 4px; margin:0 -4px; -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+  .sub { font-size:19px; max-width:520px; margin-top:20px; color:var(--mute); }
+  .ctas { display:flex; flex-wrap:wrap; align-items:center; gap:14px 14px; position:relative; }
+  .anote { font-family:var(--hand); font-weight:700; font-size:25px; color:var(--btn); line-height:1;
+           display:inline-flex; align-items:center; gap:6px; transform:rotate(-4deg); margin-left:6px; }
+  .anote svg { width:34px; height:22px; color:var(--hot); }
+  .facts { list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:15px; line-height:1.35; }
+  .facts li { position:relative; background:var(--white); border-radius:18px; padding:13px 14px 13px 42px; box-shadow:var(--shadow); }
+  .facts li::before { content:""; position:absolute; left:14px; top:14px; width:18px; height:18px;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='%23f29bb7'%3E%3Ccircle cx='12' cy='5.5' r='4.5'/%3E%3Ccircle cx='18.2' cy='10' r='4.5'/%3E%3Ccircle cx='15.8' cy='17.3' r='4.5'/%3E%3Ccircle cx='8.2' cy='17.3' r='4.5'/%3E%3Ccircle cx='5.8' cy='10' r='4.5'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='3.6' fill='%23f8d36e'/%3E%3C/svg%3E") center/contain no-repeat; }
+
+  /* полароиды */
+  #heroPics { position:relative; display:grid; grid-template-columns:1fr 1fr; gap:30px 28px; padding:18px 14px 10px; }
+  #heroPics::before, #heroPics::after { content:""; position:absolute; z-index:3; pointer-events:none; background:center/contain no-repeat; }
+  #heroPics::before { width:74px; height:48px; left:-18px; top:-22px; transform:rotate(-14deg);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 42'%3E%3Cg fill='%23e86a92'%3E%3Cpath d='M32 18C24 6 8 0 4 9c-4 9 10 17 28 11z'/%3E%3Cpath d='M32 18C40 6 56 0 60 9c4 9-10 17-28 11z'/%3E%3Cpath d='M30 21l-9 19 6-2 4 4 2-20zM34 21l9 19-6-2-4 4-2-20z' opacity='.85'/%3E%3C/g%3E%3Cpath d='M10 9c2-3 8-2 14 3' stroke='%23fff' stroke-width='2' fill='none' stroke-linecap='round' opacity='.6'/%3E%3Cpath d='M54 9c-2-3-8-2-14 3' stroke='%23fff' stroke-width='2' fill='none' stroke-linecap='round' opacity='.6'/%3E%3Ccircle cx='32' cy='19' r='5.5' fill='%23cc4273'/%3E%3C/svg%3E"); }
+  #heroPics::after { width:46px; height:46px; right:-6px; bottom:-14px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.5c.9 5.2 3.2 7.6 9 8.5-5.8.9-8.1 3.3-9 8.5-.9-5.2-3.2-7.6-9-8.5 5.8-.9 8.1-3.3 9-8.5z' fill='%23f8c950'/%3E%3Cpath d='M20 15.5c.35 2 1.2 2.9 3.4 3.3-2.2.4-3.05 1.3-3.4 3.3-.35-2-1.2-2.9-3.4-3.3 2.2-.4 3.05-1.3 3.4-3.3z' fill='%23e86a92'/%3E%3C/svg%3E"); }
+  .hp { position:relative; display:block; width:100%; background:var(--white); padding:10px 10px 0; border-radius:6px;
+        box-shadow:0 2px 3px rgba(122,46,74,.08), 0 16px 30px -16px rgba(122,46,74,.45); cursor:zoom-in;
+        transform:rotate(var(--rot, 0deg)) translateY(var(--dy, 0px)); transition:transform .25s ease; }
+  .hp:nth-child(1) { --rot:-3deg; }
+  .hp:nth-child(2) { --rot:2.6deg; --dy:22px; }
+  .hp:nth-child(3) { --rot:2deg; --dy:-4px; }
+  .hp:nth-child(4) { --rot:-2.4deg; --dy:16px; }
+  .hp:nth-child(2) .tape { background-color:var(--t-mint); transform:translateX(-50%) rotate(5deg); }
+  .hp:nth-child(3) .tape { background-color:var(--t-butter); left:22%; transform:translateX(-50%) rotate(-30deg); top:-6px; }
+  .hp:nth-child(4) .tape { background-color:var(--t-lilac); left:78%; transform:translateX(-50%) rotate(28deg); top:-6px; }
+  .hp:hover { transform:rotate(0deg) translateY(calc(var(--dy, 0px) - 6px)) scale(1.02); z-index:4; }
+  .hp img { display:block; width:100%; height:auto; aspect-ratio:1/1; object-fit:cover; border-radius:2px; background:var(--pink2); }
+  .hp .cap { display:flex; align-items:center; justify-content:center; min-height:48px; padding:4px 6px 6px;
+             font-family:var(--hand); font-weight:700; font-size:25px; line-height:1; color:var(--berry); }
+
+  /* как это работает — заметки на крафте */
+  .steps { list-style:none; display:grid; grid-template-columns:repeat(4, 1fr); gap:30px; padding-top:10px; }
+  .steps li { position:relative; background:var(--cream); border-radius:10px 10px 22px 22px; padding:34px 24px 30px;
+              box-shadow:var(--shadow); outline:2px dashed var(--stitch); outline-offset:-10px; transform:rotate(var(--rot, 0deg)); }
+  .steps li:nth-child(1) { --rot:-1.4deg; }
+  .steps li:nth-child(2) { --rot:1.2deg; }
+  .steps li:nth-child(3) { --rot:-.9deg; }
+  .steps li:nth-child(4) { --rot:1.5deg; }
+  .steps .n { display:block; font-family:var(--hand); font-weight:700; font-size:60px; line-height:.9; color:var(--btn); margin-bottom:14px; }
+  .steps .n::before { content:"шаг "; font-size:28px; color:var(--mute); }
+  .steps h3 { font-size:20px; font-weight:800; letter-spacing:-.2px; line-height:1.25; margin-bottom:8px; }
+  .steps p { font-size:15.5px; color:var(--mute); }
+
+  /* галерея */
+  #chips { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-bottom:36px; }
+  .chip { display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:8px 18px; border-radius:999px;
+          background:var(--white); border:2px solid var(--blush); font-weight:800; font-size:15px;
+          transition:background-color .15s ease, color .15s ease, border-color .15s ease; }
+  .chip sup { display:inline-block; min-width:24px; padding:1px 7px; border-radius:999px; background:var(--pink2);
+              font-size:12px; line-height:18px; vertical-align:0; color:var(--mute); }
+  .chip[aria-pressed="true"] { background:var(--btn); border-color:var(--btn); color:#fff; }
+  .chip[aria-pressed="true"] sup { background:rgba(255,255,255,.25); color:#fff; }
+  .chip:not([aria-pressed="true"]):hover { border-color:var(--hot); }
+  #grid { --gap:16px; display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+          grid-auto-rows:2px; grid-auto-flow:row dense; column-gap:var(--gap); row-gap:0; }
+  .ph { position:relative; display:block; margin-bottom:var(--gap); padding:7px; background:var(--white);
+        border-radius:22px; box-shadow:var(--shadow); cursor:zoom-in; transition:transform .2s ease, box-shadow .2s ease; }
+  .ph:nth-child(7n+4) { border-radius:90px 90px 22px 22px; }
+  .ph:nth-child(7n+4) img { border-radius:84px 84px 16px 16px; }
+  .ph[hidden] { display:none; }
+  .ph img { width:100%; height:100%; object-fit:cover; display:block; border-radius:16px; background:var(--pink2); }
+  .ph:hover { transform:translateY(-3px) rotate(-.8deg); box-shadow:0 2px 0 rgba(122,46,74,.05), 0 18px 30px -14px rgba(122,46,74,.45); }
   .ph .play { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
-  .ph .play::before { content:"▶"; font-size:20px; color:#fff; background:#000; opacity:.75;
-            padding:15px 17px 15px 20px; }
+  .ph .play::before { content:""; width:58px; height:58px; border-radius:50%; background:rgba(204,66,115,.88)
+     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 6.5v11l9-5.5z' fill='%23fff'/%3E%3C/svg%3E") 55% 50%/26px no-repeat;
+     box-shadow:0 0 0 5px rgba(255,255,255,.7); }
+  .gfoot { position:relative; margin:36px auto 0; max-width:760px; display:flex; flex-wrap:wrap; gap:14px 20px; align-items:center;
+           justify-content:space-between; background:var(--white); border-radius:28px; padding:20px 22px 20px 28px;
+           box-shadow:var(--shadow); outline:2px dashed var(--stitch); outline-offset:-8px; font-size:16.5px; font-weight:800; }
+  .gfoot span { flex:1 1 320px; }
 
-  .foot { display:flex; justify-content:space-between; align-items:baseline;
-          margin-top:56px; padding-top:22px; padding-bottom:48px;
-          border-top:1px solid var(--ink); font-size:14px; letter-spacing:.2px; }
-  .foot a:hover { text-decoration:underline; }
+  /* цены — стикеры на крафте */
+  #tariffs { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; padding-top:12px; }
+  #tariffs .tariff { flex:1 1 0; min-width:0; }
+  .tariff { position:relative; display:flex; flex-direction:column; gap:4px; background:var(--white); border-radius:24px;
+            padding:30px 20px 26px; box-shadow:var(--shadow); outline:2px dashed var(--stitch); outline-offset:-9px;
+            transform:rotate(var(--rot, 0deg)); }
+  .tariff:nth-child(2) { --rot:.8deg; }
+  .tariff:nth-child(3) { --rot:-.6deg; }
+  .tariff:nth-child(4) { --rot:.7deg; }
+  .tariff:nth-child(5) { --rot:-.8deg; }
+  .tariff.hit { --rot:-1.2deg; background:var(--pink2); outline-color:rgba(204,66,115,.45); box-shadow:0 0 0 3px var(--hot), var(--shadow); }
+  .tname { font-size:19px; font-weight:800; line-height:1.2; letter-spacing:-.2px; padding-right:4px; }
+  .tag { position:absolute; top:-16px; right:14px; z-index:2; transform:rotate(5deg);
+         font-family:var(--hand); font-weight:700; font-size:22px; line-height:1; color:var(--berry);
+         padding:6px 14px 7px; background-color:var(--t-butter);
+         background-image:repeating-linear-gradient(-45deg, rgba(255,255,255,.3) 0 5px, transparent 5px 10px);
+         clip-path:polygon(0 6%, 6% 0, 94% 4%, 100% 0, 97% 50%, 100% 100%, 92% 95%, 8% 100%, 0 95%, 3% 50%); }
+  .tprice { font-size:clamp(23px, 2.1vw, 29px); font-weight:800; letter-spacing:-.5px; line-height:1.15; margin-top:14px;
+            color:var(--btn); }
+  .tprice.word { font-size:clamp(20px, 1.7vw, 23px); padding-top:4px; }
+  .tsize { font-family:var(--hand); font-weight:700; font-size:21px; line-height:1.1; color:var(--mute); margin-bottom:10px; }
+  .tariff p { font-size:15px; line-height:1.45; color:var(--berry); }
+  .pgrid { display:grid; grid-template-columns:1.25fr 1fr; gap:32px; margin-top:52px; align-items:start; }
+  .pgrid h3 { display:flex; align-items:center; gap:10px; font-size:22px; font-weight:800; margin-bottom:12px; }
+  .pgrid h3 .ico { width:24px; height:24px; color:var(--hot); }
+  .xbox { position:relative; background:var(--cream); border-radius:24px; padding:30px 28px 18px; box-shadow:var(--shadow);
+          background-image:linear-gradient(90deg, transparent 18px, rgba(232,106,146,.35) 18px 20px, transparent 20px); }
+  #extras { list-style:none; }
+  #extras li { display:flex; justify-content:space-between; align-items:baseline; gap:16px; padding:12px 0; font-size:16px;
+               border-bottom:2px dashed rgba(122,46,74,.14); }
+  #extras li:last-child { border-bottom:0; }
+  .xp { white-space:nowrap; font-weight:800; color:var(--btn); }
+  .ctor { position:relative; display:flex; flex-direction:column; gap:18px; justify-content:space-between; align-self:start; transform:rotate(.8deg);
+          background:var(--pink2); border-radius:24px; padding:32px 28px 28px; box-shadow:var(--shadow);
+          outline:2px dashed rgba(204,66,115,.35); outline-offset:-9px; }
+  .ctor p { font-size:16px; color:var(--mute); }
+  .ctor .hnote { position:absolute; right:22px; top:-18px; font-family:var(--hand); font-weight:700; font-size:24px;
+                 color:var(--btn); transform:rotate(4deg); background:var(--white); padding:2px 12px 4px; border-radius:999px;
+                 box-shadow:var(--shadow); }
+  .ctor .btn { align-self:flex-start; }
 
-  /* лайтбокс — та же бумага, hairline-линии, текстовые стрелки */
-  #lb { position:fixed; inset:0; background:var(--paper); z-index:30; display:none;
-        flex-direction:column; }
-  #lb .lbtop { display:flex; justify-content:space-between; padding:22px 32px;
-               border-bottom:1px solid var(--ink); font-size:16px; }
-  #lb .lbtop button { background:none; border:none; font:inherit; color:var(--ink);
-                      cursor:pointer; letter-spacing:.2px; padding:0; }
-  #lb .lbtop button:hover { text-decoration:underline; }
-  #lb .lbstage { flex:1; display:flex; align-items:center; justify-content:center;
-                 padding:28px 32px; overflow:hidden; }
-  #lb .lbstage img, #lb .lbstage iframe { max-width:100%; max-height:100%;
-        border:1px solid var(--ink); background:#000; }
-  #lb .lbstage iframe { width:min(92vw, 1000px); height:min(70vh, 620px); }
-  #lb .lbbot { display:flex; justify-content:space-between; align-items:center;
-               padding:18px 32px; border-top:1px solid var(--ink); font-size:16px; }
-  #lb .lbbot button { background:none; border:none; font:inherit; cursor:pointer;
-                      color:var(--ink); padding:0; }
-  #lb .lbbot button:hover { text-decoration:underline; }
-  @media (max-width:640px) { .wrap { padding:0 16px; } .nav { font-size:17px; } }
+  /* сроки */
+  .soft { background:var(--cream); }
+  .terms { display:grid; grid-template-columns:repeat(4, 1fr); gap:18px; }
+  .terms div { position:relative; border-radius:24px; padding:24px 22px 26px; background:var(--mint); }
+  .terms div:nth-child(2) { background:var(--butter); }
+  .terms div:nth-child(3) { background:var(--pink2); }
+  .terms div:nth-child(4) { background:var(--lilac); }
+  .terms dt { font-family:var(--hand); font-weight:700; font-size:26px; line-height:1.05; color:var(--btn); margin-bottom:10px; }
+  .terms dd { font-size:18px; font-weight:800; line-height:1.3; }
+  .note { font-size:15.5px; color:var(--mute); margin:28px auto 0; max-width:760px; text-align:center; }
+
+  /* faq */
+  .faq { max-width:860px; margin:0 auto; display:flex; flex-direction:column; gap:12px; }
+  .faq details { background:var(--white); border-radius:24px; box-shadow:var(--shadow); transition:background-color .15s ease; }
+  .faq details[open] { outline:2px dashed var(--stitch); outline-offset:-8px; }
+  .faq summary { list-style:none; cursor:pointer; position:relative; padding:20px 72px 20px 26px; min-height:64px;
+                 font-size:18px; font-weight:800; line-height:1.35; display:flex; align-items:center; }
+  .faq summary::-webkit-details-marker { display:none; }
+  .faq summary::after { content:"+"; position:absolute; right:18px; top:50%; width:36px; height:36px; margin-top:-18px;
+                        border-radius:50%; background:var(--pink2); color:var(--btn); font-size:24px; line-height:34px; text-align:center; font-weight:800; }
+  .faq details[open] summary::after { content:"−"; background:var(--btn); color:#fff; }
+  .faq summary:hover::after { background:var(--blush); }
+  .faq details[open] summary:hover::after { background:var(--btn-d); }
+  .faq details p { padding:0 26px 24px; font-size:16px; max-width:720px; color:var(--mute); }
+
+  /* отзывы */
+  .reviews { position:relative; max-width:860px; margin:0 auto; background:var(--white); border-radius:30px; padding:34px 32px 30px;
+             box-shadow:var(--shadow); display:flex; flex-wrap:wrap; gap:20px 28px; justify-content:space-between; align-items:center; }
+  .reviews::after { content:""; position:absolute; left:64px; bottom:-14px; width:30px; height:30px; background:var(--white);
+                    transform:rotate(45deg); border-radius:0 0 8px 0; box-shadow:6px 6px 10px -6px rgba(122,46,74,.25); }
+  .reviews p { font-size:18px; max-width:520px; flex:1 1 300px; }
+
+  /* заказ — письмо в конверте */
+  .order { background-color:var(--pink2);
+           background-image:radial-gradient(rgba(204,66,115,.12) 2px, transparent 2.6px); background-size:26px 26px; }
+  .letter { position:relative; max-width:1040px; margin:0 auto; border-radius:30px; padding:64px 48px 44px;
+            border:10px solid transparent;
+            background:linear-gradient(var(--cream), var(--cream)) padding-box,
+                       repeating-linear-gradient(-45deg, var(--hot) 0 14px, var(--white) 14px 22px, #8fc0e6 22px 36px, var(--white) 36px 44px) border-box;
+            box-shadow:0 22px 40px -22px rgba(122,46,74,.45); }
+  .letter::before { content:""; position:absolute; left:0; right:0; top:0; height:58px; background:var(--pink);
+                    clip-path:polygon(0 0, 100% 0, 50% 100%); opacity:.85; border-radius:20px 20px 0 0; }
+  .letter .shead { position:relative; }
+  .stamp { position:absolute; right:26px; top:22px; z-index:2; width:90px; height:110px; transform:rotate(6deg);
+           background:var(--white); padding:9px; filter:drop-shadow(0 4px 6px rgba(122,46,74,.2));
+           --holes:radial-gradient(circle 4px at 5px 5px, transparent 3.6px, #000 4px) -5px -5px/10px 10px,
+                   linear-gradient(#000 0 0) 5px 5px/calc(100% - 10px) calc(100% - 10px) no-repeat;
+           -webkit-mask:var(--holes); mask:var(--holes); }
+  .stamp span { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; height:100%;
+                background:var(--pink2); border:2px dashed rgba(204,66,115,.45); color:var(--btn);
+                font-family:var(--hand); font-weight:700; font-size:19px; line-height:1; }
+  .stamp .ico { width:40px; height:28px; color:var(--hot); }
+  .olinks { list-style:none; display:grid; grid-template-columns:repeat(auto-fit, minmax(270px, 1fr)); gap:14px; }
+  .olinks li { display:flex; }
+  .olinks a { flex:1; display:flex; justify-content:space-between; align-items:center; gap:14px; min-height:76px;
+              padding:16px 16px 16px 22px; border-radius:22px; background:var(--white); box-shadow:var(--shadow);
+              font-size:19px; font-weight:800; line-height:1.25; transition:transform .15s ease, background-color .15s ease; }
+  .olinks a > span:last-child { flex:none; display:flex; align-items:center; justify-content:center; width:42px; height:42px;
+              border-radius:50%; background:var(--btn); color:#fff; font-size:18px; }
+  .olinks a:hover { transform:translateY(-2px) rotate(-.5deg); background:var(--pink); }
+  .olinks small { display:block; font-size:14px; font-weight:400; color:var(--mute); margin-top:3px; }
+  .howto { position:relative; margin:30px auto 0; max-width:720px; font-size:16px; color:var(--mute); text-align:center;
+           padding-top:26px; border-top:2px dashed rgba(122,46,74,.16); }
+
+  .foot { display:flex; flex-wrap:wrap; gap:12px 20px; justify-content:space-between; align-items:center;
+          padding-top:26px; padding-bottom:34px; font-size:14.5px; color:var(--mute); }
+  .foot a { display:inline-flex; align-items:center; min-height:44px; font-weight:800; color:var(--berry); }
+  .foot a:hover { color:var(--btn); }
+  .foot .hand { font-family:var(--hand); font-weight:700; font-size:22px; color:var(--btn); }
+
+  /* липкая кнопка на телефоне */
+  .stick { display:none; }
+
+  /* лайтбокс */
+  #lb { position:fixed; inset:0; z-index:50; display:none; flex-direction:column; background-color:var(--pink);
+        background-image:radial-gradient(rgba(232,106,146,.14) 2px, transparent 2.6px); background-size:26px 26px; }
+  #lb .lbtop, #lb .lbbot { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:14px var(--g); font-size:16px; }
+  #lb #count { font-family:var(--hand); font-weight:700; font-size:26px; color:var(--btn); }
+  #lb button { min-height:46px; padding:0 20px; border-radius:999px; background:var(--white); border:2px solid var(--blush);
+               font-weight:800; font-size:15.5px; box-shadow:0 3px 0 var(--blush); }
+  #lb button:hover { border-color:var(--hot); }
+  #lb .lbstage { flex:1; display:flex; align-items:center; justify-content:center; padding:8px var(--g); overflow:hidden; min-height:0; }
+  #lb .lbstage img, #lb .lbstage iframe { max-width:100%; max-height:100%; background:var(--white); border:10px solid var(--white);
+             border-radius:22px; box-shadow:0 20px 40px -20px rgba(122,46,74,.5); }
+  #lb .lbstage iframe { width:min(92vw, 1000px); height:min(70vh, 620px); background:#000; }
+  #lb .lbcap { font-weight:800; color:var(--mute); }
+  #lb .lbbot .arrows { display:flex; gap:10px; white-space:nowrap; }
+
+  @media (max-width:1180px) {
+    #tariffs { row-gap:30px; }
+    #tariffs .tariff { flex:0 1 calc((100% - 40px) / 3); }
+    .steps, .terms { grid-template-columns:1fr 1fr; }
+    #nav { font-size:15px; }
+    #nav a:not(.btn) { padding:10px 10px; }
+  }
+  @media (max-width:900px) {
+    #menuBtn { display:block; }
+    #nav { display:none; position:absolute; left:var(--g); right:var(--g); top:calc(100% + 8px); background:var(--white);
+           border-radius:26px; box-shadow:0 20px 40px -18px rgba(122,46,74,.45); flex-direction:column; align-items:stretch;
+           gap:0; padding:8px 18px 18px; }
+    #nav.open { display:flex; }
+    #nav a:not(.btn) { padding:14px 6px; border-radius:0; border-bottom:2px dashed rgba(122,46,74,.12); font-size:18px; }
+    #nav a:not(.btn):hover { background:none; color:var(--btn); }
+    #nav .btn { margin:16px 0 0; min-height:52px; font-size:17px; }
+    .hero .wrap { grid-template-columns:1fr; gap:0; padding-top:36px; padding-bottom:56px; }
+    /* на телефоне фото идут сразу под заголовком, кнопки — под фото */
+    .hero .txt { display:contents; }
+    .hero .txt > div:first-child { order:1; }
+    #heroPics { order:2; margin-top:30px; max-width:560px; width:100%; justify-self:center; }
+    .hero .ctas { order:3; margin-top:40px; }
+    .hero .facts { order:4; margin-top:24px; }
+    .pgrid { grid-template-columns:1fr; gap:40px; }
+  }
+  @media (max-width:640px) {
+    :root { --g:16px; }
+    html { scroll-padding-top:70px; }
+    .top .wrap { height:62px; }
+    .brand .ico { width:32px; height:22px; }
+    .brand b { font-size:17px; }
+    .brand small { font-size:17px; }
+    .sec { padding-top:60px; padding-bottom:64px; }
+    .shead { margin-bottom:32px; }
+    .snum { font-size:24px; }
+    .slead { font-size:16px; }
+    .hello { font-size:24px; }
+    .sub { font-size:17px; margin-top:16px; }
+    .ctas .btn { flex:1 1 100%; }
+    .anote { margin:2px auto 0; font-size:23px; }
+    .facts { grid-template-columns:1fr; gap:8px; font-size:15px; }
+    #heroPics { gap:22px 16px; padding:14px 6px 6px; }
+    #heroPics::before { width:56px; height:36px; left:-6px; top:-14px; }
+    #heroPics::after { width:34px; height:34px; right:-2px; bottom:-12px; }
+    .hp { padding:7px 7px 0; }
+    .hp:nth-child(2) { --dy:14px; }
+    .hp:nth-child(4) { --dy:10px; }
+    .hp .tape { width:62px; height:20px; top:-10px; }
+    .hp .cap { font-size:21px; min-height:38px; }
+    .steps, .terms { grid-template-columns:1fr; }
+    #tariffs .tariff { flex:1 1 100%; }
+    .steps { gap:26px; }
+    .steps li { padding:28px 22px 24px; }
+    .steps .n { font-size:50px; margin-bottom:8px; }
+    .steps .n::before { font-size:24px; }
+    #tariffs { gap:26px; }
+    .tprice { margin-top:8px; font-size:28px; }
+    .tprice.word { font-size:24px; }
+    #grid { --gap:10px; grid-template-columns:repeat(2, 1fr); }
+    .ph { padding:5px; border-radius:18px; }
+    .ph img { border-radius:13px; }
+    .ph:nth-child(7n+4) { border-radius:70px 70px 18px 18px; }
+    .ph:nth-child(7n+4) img { border-radius:65px 65px 13px 13px; }
+    .ph .play::before { width:46px; height:46px; background-size:22px; }
+    #chips { flex-wrap:nowrap; justify-content:flex-start; overflow-x:auto; margin:0 calc(-1 * var(--g)) 26px;
+             padding:4px var(--g) 8px; scrollbar-width:none; }
+    #chips::-webkit-scrollbar { display:none; }
+    .chip { white-space:nowrap; flex:none; }
+    .gfoot { padding:20px; text-align:center; }
+    .gfoot .btn { flex:1 1 100%; }
+    .xbox { padding:24px 18px 12px 30px; background-image:linear-gradient(90deg, transparent 13px, rgba(232,106,146,.35) 13px 15px, transparent 15px); }
+    #extras li { font-size:15.5px; }
+    .ctor { padding:30px 20px 22px; }
+    .ctor .btn { align-self:stretch; }
+    .terms div { padding:20px 20px 22px; }
+    .faq summary { font-size:17px; padding:16px 62px 16px 20px; }
+    .faq summary::after { right:14px; }
+    .faq details p { padding:0 20px 20px; font-size:15.5px; }
+    .reviews { padding:26px 20px 22px; }
+    .reviews .btn { flex:1 1 100%; }
+    .letter { padding:58px 18px 26px; border-width:8px; border-radius:24px; }
+    .letter::before { height:40px; }
+    .letter .shead { padding-top:56px; }
+    .stamp { right:50%; margin-right:-35px; top:20px; width:70px; height:90px; padding:7px; transform:rotate(5deg); }
+    .stamp span { font-size:16px; }
+    .stamp .ico { width:32px; height:22px; }
+    .olinks { grid-template-columns:1fr; gap:10px; }
+    .olinks a { font-size:18px; min-height:68px; padding:14px 14px 14px 18px; }
+    .howto { font-size:15px; }
+    .foot { justify-content:center; text-align:center; flex-direction:column; gap:4px; }
+    body { padding-bottom:78px; }
+    .stick { display:block; position:fixed; left:0; right:0; bottom:0; z-index:25;
+             padding:10px var(--g) calc(12px + env(safe-area-inset-bottom)); background:rgba(253,238,243,.94);
+             -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border-top:2px dashed rgba(122,46,74,.16); }
+    .stick .btn { display:flex; width:100%; }
+    #lb .lbtop, #lb .lbbot { padding:10px var(--g); }
+    #lb .lbstage { padding:6px var(--g); }
+    #lb .lbstage img { border-width:7px; border-radius:18px; }
+    #lb .lbcap { font-size:14px; }
+    #lb button { padding:0 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior:auto; }
+    *, *::before, *::after { transition:none !important; animation:none !important; }
+    .btn:hover, .btn:active, .ph:hover, .olinks a:hover { transform:none; }
+    .hp:hover { transform:rotate(var(--rot, 0deg)) translateY(var(--dy, 0px)); }
+  }
 </style>
 </head>
 <body>
-<header class="wrap nav">
-  <span>Фигурки на заказ</span>
-  <a href="https://www.avito.ru/sankt-peterburg/predlozheniya_uslug/izgotovlenie_figurki_na_zakaz_7941127708" target="_blank" rel="noopener">Заказать — Авито&#8599;</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-bow" viewBox="0 0 64 42">
+    <path fill="currentColor" d="M32 18C24 6 8 0 4 9c-4 9 10 17 28 11zM32 18C40 6 56 0 60 9c4 9-10 17-28 11z"/>
+    <path fill="currentColor" opacity=".8" d="M30 21l-9 19 6-2 4 4 2-20zM34 21l9 19-6-2-4 4-2-20z"/>
+    <path d="M10 9c2-3 8-2 14 3M54 9c-2-3-8-2-14 3" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>
+    <circle cx="32" cy="19" r="5.5" fill="#cc4273"/>
+  </symbol>
+  <symbol id="i-flower" viewBox="0 0 24 24">
+    <g fill="currentColor"><circle cx="12" cy="5.5" r="4.5"/><circle cx="18.2" cy="10" r="4.5"/><circle cx="15.8" cy="17.3" r="4.5"/><circle cx="8.2" cy="17.3" r="4.5"/><circle cx="5.8" cy="10" r="4.5"/></g>
+    <circle cx="12" cy="12" r="3.6" fill="#f8d36e"/>
+  </symbol>
+  <symbol id="i-arrow" viewBox="0 0 34 22">
+    <path d="M31 19C21 19 11 15 6 4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M2.5 10.5L5.5 3l7.5 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><svg class="ico" aria-hidden="true"><use href="#i-bow"/></svg><span><b>Фигурки по фото</b><small>кокешики</small></span></a>
+    <button id="menuBtn" aria-expanded="false" aria-controls="nav">Меню</button>
+    <nav id="nav" aria-label="Разделы">
+      <a href="#works">Работы</a>
+      <a href="#how">Как это работает</a>
+      <a href="#prices">Цены</a>
+      <a href="constructor.html">Конструктор</a>
+      <a href="#faq">FAQ</a>
+      <a class="btn solid" href="#order">Заказать</a>
+    </nav>
+  </div>
 </header>
-<section class="wrap head">
-  <h1>Мои работы</h1>
+
+<main id="top">
+
+<section class="hero">
+  <div class="wrap">
+    <div class="txt">
+      <div>
+        <p class="hello" aria-hidden="true"><svg class="ico"><use href="#i-flower"/></svg>мини-копии ручной работы</p>
+        <h1>Фигурка человека <mark>по фото</mark> — подарок, который не забудут</h1>
+        <p class="sub">Делаем мини-копию по вашим фотографиям: печатаем на 3D-принтере и расписываем вручную. Одного человека, пару, всю семью — и питомца тоже.</p>
+      </div>
+      <div class="ctas">
+        <a class="btn solid" href="#order">Заказать фигурку</a>
+        <a class="btn" href="#works">Смотреть <span id="workCount">78</span> работ</a>
+        <span class="anote" aria-hidden="true"><svg><use href="#i-arrow"/></svg>без предоплаты ♡</span>
+      </div>
+      <ul class="facts">
+        <li>Показываем модель до печати</li>
+        <li>Роспись вручную</li>
+        <li>Без предоплаты — оплата после согласования модели</li>
+        <li>Доставка по России и СНГ</li>
+      </ul>
+    </div>
+    <div id="heroPics"></div>
+  </div>
 </section>
-<main class="wrap">
-  <div id="grid"></div>
+
+<section id="how" class="kraft">
+  <div class="wrap sec">
+    <div class="shead">
+      <span class="snum"><svg class="ico" aria-hidden="true"><use href="#i-flower"/></svg>01 — процесс</span>
+      <h2>Как это работает</h2>
+    </div>
+    <ol class="steps">
+      <li><span class="tape"></span><span class="n">1</span><h3>Присылаете фото</h3><p>2–3 снимка человека в полный рост и лицо крупно. Пишете, во что одеть, какую позу и детали хотите.</p></li>
+      <li><span class="tape mint"></span><span class="n">2</span><h3>Делаем 3D-модель</h3><p>Собираем объёмную модель и присылаем вам на согласование. Вносим правки, пока вам всё не понравится.</p></li>
+      <li><span class="tape butter"></span><span class="n">3</span><h3>Печатаем</h3><p>Печатаем фигурку на 3D-принтере и аккуратно готовим её к росписи.</p></li>
+      <li><span class="tape lilac"></span><span class="n">4</span><h3>Красим и отправляем</h3><p>Расписываем каждую деталь вручную, бережно упаковываем и отправляем вам.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section id="works">
+  <div class="wrap sec">
+    <div class="shead">
+      <span class="snum"><svg class="ico" aria-hidden="true"><use href="#i-flower"/></svg>02 — работы</span>
+      <h2>Наши работы</h2>
+      <p class="slead">Реальные фотографии готовых фигурок. Нажмите на фото, чтобы рассмотреть.</p>
+    </div>
+    <div id="chips" role="group" aria-label="Фильтр по категориям"></div>
+    <div id="grid"></div>
+    <div class="gfoot">
+      <span>Хотите такую же? Пришлите фото — подскажем, что получится.</span>
+      <a class="btn solid" href="#order">Заказать</a>
+    </div>
+  </div>
+</section>
+
+<section id="prices" class="kraft">
+  <div class="wrap sec">
+    <div class="shead">
+      <span class="snum"><svg class="ico" aria-hidden="true"><use href="#i-flower"/></svg>03 — цены</span>
+      <h2>Цены</h2>
+      <p class="slead">Итоговая стоимость зависит от размера и количества деталей. Точную цену назовём по вашим фото.</p>
+    </div>
+    <!-- Цены редактируются в app.js → CONFIG.tariffs и CONFIG.extras -->
+    <div id="tariffs"></div>
+    <div class="pgrid">
+      <div class="xbox">
+        <span class="tape mint"></span>
+        <h3><svg class="ico" aria-hidden="true"><use href="#i-flower"/></svg>Дополнительно</h3>
+        <ul id="extras"></ul>
+      </div>
+      <div class="ctor">
+        <span class="hnote" aria-hidden="true">попробуйте ♡</span>
+        <div>
+          <h3><svg class="ico" aria-hidden="true"><use href="#i-bow"/></svg>Конструктор фигурки</h3>
+          <p>Соберите образ будущей фигурки онлайн и пришлите нам — так проще объяснить, какой вы её видите.</p>
+        </div>
+        <a class="btn" href="constructor.html">Открыть конструктор &#8594;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="delivery" class="soft">
+  <div class="wrap sec">
+    <div class="shead">
+      <span class="snum"><svg class="ico" aria-hidden="true"><use href="#i-flower"/></svg>04 — сроки</span>
+      <h2>Сроки и доставка</h2>
+    </div>
+    <dl class="terms">
+      <div><dt>Изготовление</dt><dd data-term="leadTime"></dd></div>
+      <div><dt>Срочно</dt><dd data-term="rushTime"></dd></div>
+      <div><dt>Оплата</dt><dd data-term="prepay"></dd></div>
+      <div><dt>Доставка по России и СНГ</dt><dd data-term="deliveryTime"></dd></div>
+    </dl>
+    <p class="note">Отправляем из города <span data-term="city"></span>: <span data-term="delivery"></span>. Фигурку надёжно упаковываем, чтобы она доехала целой.</p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap sec">
+    <div class="shead">
+      <span class="snum"><svg class="ico" aria-hidden="true"><use href="#i-flower"/></svg>05 — вопросы</span>
+      <h2>Частые вопросы</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>Сколько времени занимает изготовление?</summary>
+        <p>Обычно <span data-term="leadTime"></span> с момента согласования модели, плюс время на доставку. Если подарок нужен к дате — напишите заранее, есть срочное изготовление.</p>
+      </details>
+      <details>
+        <summary>Сколько фотографий нужно?</summary>
+        <p>Хватит 2–3 чётких фото: лицо крупным планом и человек в полный рост в той одежде, которую хотите на фигурке. Если одежду нужно поменять — пришлите пример. Чем больше ракурсов, тем точнее сходство.</p>
+      </details>
+      <details>
+        <summary>Можно сделать фигурку с питомцем?</summary>
+        <p>Да. Кошку или собаку делаем по её фотографиям — отдельно или рядом с хозяином на общей подставке.</p>
+      </details>
+      <details>
+        <summary>Отправляете в другие города и страны СНГ?</summary>
+        <p>Да, отправляем по всей России и в страны СНГ: <span data-term="delivery"></span>. Стоимость доставки считается по тарифам службы.</p>
+      </details>
+      <details>
+        <summary>Нужна ли предоплата?</summary>
+        <p>Нет. Сначала мы делаем 3D-модель и показываем её вам. Оплата — полностью, после того как вы согласуете модель, и только потом печатаем и красим.</p>
+      </details>
+      <details>
+        <summary>Можно ли внести правки?</summary>
+        <p>Да. Перед печатью мы показываем 3D-модель, и вы можете попросить изменить причёску, позу, одежду или детали. После печати и покраски серьёзные изменения уже невозможны, поэтому всё согласуем заранее.</p>
+      </details>
+      <details>
+        <summary>Из чего сделана фигурка?</summary>
+        <p>Фигурка печатается на 3D-принтере из пластика, а затем расписывается вручную.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section id="reviews">
+  <div class="wrap sec">
+    <div class="shead">
+      <span class="snum"><svg class="ico" aria-hidden="true"><use href="#i-flower"/></svg>06 — отзывы</span>
+      <h2>Отзывы</h2>
+    </div>
+    <!-- TODO: сюда можно добавить 3–4 отзыва покупателей (текст + имя) -->
+    <div class="reviews">
+      <span class="tape lilac"></span>
+      <p>Отзывы покупателей собраны на Авито — там их можно почитать и посмотреть, как фигурки выглядят у новых владельцев.</p>
+      <a class="btn" data-link="avito" href="#">Читать отзывы на Авито &#8599;</a>
+    </div>
+  </div>
+</section>
+
+<section id="order" class="order">
+  <div class="wrap sec">
+    <div class="letter">
+      <span class="stamp" aria-hidden="true"><span><svg class="ico"><use href="#i-bow"/></svg>кокешики</span></span>
+      <div class="shead">
+        <span class="snum"><svg class="ico" aria-hidden="true"><use href="#i-flower"/></svg>07 — заказ</span>
+        <h2>Заказать фигурку</h2>
+        <p class="slead">Напишите нам, где удобно, и пришлите фото — ответим, сколько это будет стоить и когда будет готово.</p>
+      </div>
+      <ul class="olinks">
+        <li><a data-link="avito" href="#"><span>Авито<small>написать в сообщения</small></span><span>&#8599;</span></a></li>
+        <li><a data-link="telegram" href="#"><span>Telegram<small>написать в личные сообщения</small></span><span>&#8599;</span></a></li>
+        <li><a data-link="tgchannel" href="#"><span>Telegram-канал «кокешики»<small>открытие записи, новые работы</small></span><span>&#8599;</span></a></li>
+        <li><a data-link="instagram" href="#"><span>Instagram<small>работы и процесс</small></span><span>&#8599;</span></a></li>
+        <li><a data-link="tiktok" href="#"><span>TikTok<small>видео фигурок</small></span><span>&#8599;</span></a></li>
+      </ul>
+      <p class="howto">Что написать: кого делаем (человек, пара, с питомцем), желаемый размер, к какой дате нужен подарок, и приложите 2–3 фото.</p>
+    </div>
+  </div>
+</section>
+
 </main>
+
 <footer class="wrap foot">
-  <span>по всем вопросам — <a href="https://www.avito.ru/sankt-peterburg/predlozheniya_uslug/izgotovlenie_figurki_na_zakaz_7941127708" target="_blank" rel="noopener">Авито</a></span>
-  <span>ручная работа</span>
+  <span>© <span id="year">2026</span> Фигурки по фото · ручная работа <span class="hand" aria-hidden="true">♡</span></span>
+  <a data-link="avito" href="#">Авито &#8599;</a>
 </footer>
 
-<div id="lb">
+<div class="stick"><a class="btn solid" href="#order">Заказать фигурку</a></div>
+
+<div id="lb" role="dialog" aria-modal="true" aria-label="Просмотр фото">
   <div class="lbtop">
     <span id="count"></span>
     <button id="close" title="Esc">закрыть ✕</button>
   </div>
   <div class="lbstage" id="lbmedia"></div>
   <div class="lbbot">
-    <span class="cap" id="lbcap"></span>
-    <span>
-      <button id="prev">&#8592; пред</button>
-      &nbsp;&nbsp;
-      <button id="next">след &#8594;</button>
+    <span class="lbcap" id="lbcap"></span>
+    <span class="arrows">
+      <button id="prev" aria-label="Предыдущее фото">&#8592; пред</button><button id="next" aria-label="Следующее фото">след &#8594;</button>
     </span>
   </div>
 </div>
 
 <script src="data.js"></script>
-<script>
-(() => {
-  const grid = document.getElementById("grid");
-
-  PHOTOS.forEach((p, idx) => {
-    const d = document.createElement("div"); d.className = "ph"; d.dataset.idx = idx;
-    const img = document.createElement("img");
-    img.loading = "lazy"; img.src = p.t || p.f; img.alt = "";
-    d.append(img);
-    if (p.kind === "video") { const pl = document.createElement("div"); pl.className = "play"; d.append(pl); }
-    d.addEventListener("click", () => openLb(idx));
-    grid.append(d);
-  });
-
-  /* masonry: высота ячейки = пропорция фото, строка сетки 6px + 1px линия */
-  const ROWPX = 6;
-  function relayout() {
-    const first = grid.querySelector(".ph");
-    if (!first) return;
-    const cw = first.getBoundingClientRect().width;
-    for (const el of grid.children) {
-      const p = PHOTOS[+el.dataset.idx];
-      const ratio = (p.h || 960) / (p.w || 720);
-      const span = Math.max(2, Math.round((cw * ratio - 1) / (ROWPX + 1)));
-      el.style.gridRowEnd = "span " + span;
-    }
-  }
-  relayout();
-  let rsT;
-  window.addEventListener("resize", () => { clearTimeout(rsT); rsT = setTimeout(relayout, 120); });
-
-  const lb = document.getElementById("lb");
-  function openLb(i) {
-    const p = PHOTOS[i];
-    document.getElementById("lbmedia").innerHTML = (p.kind === "video" && p.embed)
-      ? `<iframe src="${p.embed}" allow="autoplay; fullscreen" allowfullscreen></iframe>`
-      : `<img src="${p.f}" alt="">`;
-    document.getElementById("lbcap").textContent = p.kind === "video" ? "видео" : "";
-    document.getElementById("count").textContent = (i + 1) + " / " + PHOTOS.length;
-    lb.style.display = "flex"; lb.dataset.pos = i;
-  }
-  document.getElementById("close").onclick = () => { lb.style.display = "none"; document.getElementById("lbmedia").innerHTML = ""; };
-  document.getElementById("prev").onclick = () => openLb((+lb.dataset.pos - 1 + PHOTOS.length) % PHOTOS.length);
-  document.getElementById("next").onclick = () => openLb((+lb.dataset.pos + 1) % PHOTOS.length);
-  document.addEventListener("keydown", e => {
-    if (lb.style.display === "none" || !lb.style.display) return;
-    if (e.key === "Escape") document.getElementById("close").onclick();
-    if (e.key === "ArrowLeft") document.getElementById("prev").onclick();
-    if (e.key === "ArrowRight") document.getElementById("next").onclick();
-  });
-})();
-</script>
+<script src="app.js"></script>
 </body>
 </html>

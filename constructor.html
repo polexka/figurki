@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Собрать фигурку — конструктор</title>
+<meta name="theme-color" content="#fdeef3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;800&display=swap">
+<style>
+  /* Тот же стиль, что и главная: «kawaii pastel» + «scrapbook».
+     Розовая основа, ягодный текст, кнопки-«леденцы», полароид со скотчем,
+     рукописные заметки (Caveat), пунктирная «строчка». Токены — как в index.html. */
+  :root {
+    --pink:#fdeef3; --pink2:#fadfe9; --blush:#f6c6d7; --cream:#fff9f5; --white:#fff;
+    --berry:#7a2e4a; --mute:#8f4a66; --hot:#e86a92; --btn:#cc4273; --btn-d:#a3305a;
+    --kraft:#e9d9bf;
+    --mint:#d4efe4; --lilac:#e7ddf7; --butter:#fcefc4; --sky:#dcecf9;
+    --t-pink:rgba(244,160,192,.75); --t-mint:rgba(150,212,190,.75);
+    --t-lilac:rgba(190,170,236,.75); --t-butter:rgba(248,210,110,.78);
+    --stitch:rgba(122,46,74,.26);
+    --shadow:0 1px 0 rgba(122,46,74,.05), 0 12px 26px -14px rgba(122,46,74,.38);
+    --ui:"Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --hand:"Caveat", "Segoe Print", "Comic Sans MS", cursive;
+    --g:32px;
+    --photo:#f0eeeb; /* фон «фотографии» = фон холста p5.brush (brush.js), чтобы оба режима совпадали */
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { color-scheme:light; background:var(--pink); -webkit-text-size-adjust:100%; }
+  body { background:var(--pink); color:var(--berry); font-family:var(--ui);
+         font-weight:400; font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+  body.lock { overflow:hidden; }
+  a { color:inherit; text-decoration:none; }
+  button, input, textarea { font:inherit; color:inherit; }
+  button { cursor:pointer; background:none; border:0; }
+  b, strong { font-weight:800; }
+  .wrap { max-width:1280px; margin:0 auto; padding:0 var(--g); }
+  :focus-visible { outline:3px solid var(--btn); outline-offset:3px; border-radius:12px; }
+  .ico { width:1em; height:1em; display:inline-block; vertical-align:-.12em; flex:none; }
+
+  /* washi-скотч */
+  .tape { position:absolute; z-index:2; top:-13px; left:50%; width:88px; height:26px;
+          transform:translateX(-50%) rotate(-4deg); background-color:var(--t-pink);
+          background-image:repeating-linear-gradient(-45deg, rgba(255,255,255,.32) 0 5px, transparent 5px 10px);
+          clip-path:polygon(0 8%, 5% 0, 12% 6%, 20% 0, 80% 4%, 88% 0, 95% 6%, 100% 0, 97% 50%, 100% 100%, 92% 94%, 84% 100%, 16% 96%, 8% 100%, 0 94%, 3% 50%);
+          pointer-events:none; }
+  .tape.mint { background-color:var(--t-mint); }
+  .tape.butter { background-color:var(--t-butter); }
+
+  /* кнопки — «леденцы» */
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:50px;
+         padding:12px 26px; border-radius:999px; font-weight:800; font-size:17px; line-height:1.15;
+         text-align:center; background:var(--white); color:var(--berry); border:2px solid var(--blush);
+         box-shadow:0 4px 0 var(--blush); transition:transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
+  .btn:hover { transform:translateY(-2px); box-shadow:0 6px 0 var(--blush); }
+  .btn:active { transform:translateY(3px); box-shadow:0 1px 0 var(--blush); }
+  .btn.solid { background:var(--btn); color:#fff; border-color:var(--btn); box-shadow:0 4px 0 var(--btn-d); }
+  .btn.solid:hover { box-shadow:0 6px 0 var(--btn-d); }
+  .btn.solid:active { box-shadow:0 1px 0 var(--btn-d); }
+  .btn.sm { min-height:44px; padding:8px 16px; font-size:15px; box-shadow:0 3px 0 var(--blush); }
+  .btn.sm.solid { box-shadow:0 3px 0 var(--btn-d); }
+
+  /* шапка — как на главной, но не липкая: здесь прилипает превью */
+  .top { background:rgba(253,238,243,.92); border-bottom:2px dashed rgba(122,46,74,.16); }
+  .top .wrap { display:flex; align-items:center; justify-content:space-between; gap:16px; height:70px; }
+  .brand { display:flex; align-items:center; gap:10px; min-height:44px; white-space:nowrap; line-height:1; }
+  .brand .ico { width:38px; height:26px; color:var(--hot); }
+  .brand b { display:block; font-size:19px; letter-spacing:-.2px; }
+  .brand small { display:block; font-family:var(--hand); font-weight:700; font-size:19px; color:var(--btn); margin-top:1px; }
+  .back { display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:8px 18px; border-radius:999px;
+          background:var(--white); border:2px solid var(--blush); font-weight:800; font-size:15.5px; white-space:nowrap;
+          transition:border-color .15s ease; }
+  .back:hover { border-color:var(--hot); }
+
+  /* раскладка */
+  .main { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:36px; align-items:start;
+          padding-top:16px; padding-bottom:64px; }
+
+  /* превью: «стол» в горошек, на нём полароид со скотчем */
+  .stage { position:sticky; top:16px; align-self:start; z-index:10;
+           height:calc(100vh - 104px); height:calc(100svh - 104px); min-height:480px;
+           display:flex; flex-direction:column; border-radius:28px; overflow:hidden;
+           background-color:var(--pink2);
+           background-image:radial-gradient(rgba(204,66,115,.12) 2px, transparent 2.6px); background-size:26px 26px;
+           box-shadow:var(--shadow); outline:2px dashed rgba(204,66,115,.35); outline-offset:-9px; }
+  .stage .view { flex:1; min-height:0; position:relative; display:flex; align-items:center; justify-content:center;
+                 gap:14px; padding:90px 24px 24px; container-type:size; }
+  .frame { --pad:10px; --cap:40px;
+           /* высота «фото» — по свободному месту, ширина — по пропорции холста 300×416 */
+           --ih:min(100cqh - var(--pad) - var(--cap), 640px, (100cqw - 2 * var(--pad) - 8px) * 416 / 300);
+           position:relative; flex:none; display:flex; flex-direction:column;
+           padding:var(--pad) var(--pad) 0; background:var(--white); border-radius:6px;
+           box-shadow:0 2px 3px rgba(122,46,74,.08), 0 16px 30px -16px rgba(122,46,74,.45);
+           transform:rotate(-1.4deg); }
+  .shot { width:calc(var(--ih) * 300 / 416); height:var(--ih); background:var(--photo); border-radius:2px; overflow:hidden; }
+  #fig, #paint { width:100%; height:100%; display:block; }
+  #fig[hidden], #paint[hidden] { display:none; }
+  .frame .cap { height:var(--cap); display:flex; align-items:center; justify-content:center;
+                font-family:var(--hand); font-weight:700; font-size:24px; line-height:1; color:var(--berry); white-space:nowrap; }
+
+  /* переключатель «Рисунок / Схема» — пилюля в правом верхнем углу */
+  .ctl { position:absolute; top:22px; left:24px; right:24px; display:flex; align-items:center; justify-content:flex-end; gap:12px; z-index:3; }
+  .ctl .hnote { font-family:var(--hand); font-weight:700; font-size:24px; line-height:1; color:var(--btn); transform:rotate(-3deg); white-space:nowrap; }
+  .mode { display:flex; gap:2px; padding:3px; border-radius:999px; background:var(--white);
+          border:2px solid var(--blush); box-shadow:0 3px 0 var(--blush); }
+  .mode button { min-height:40px; padding:0 16px; border-radius:999px; font-weight:800; font-size:14.5px; white-space:nowrap;
+                 transition:background-color .15s ease, color .15s ease; }
+  .mode button:hover { background:var(--pink); }
+  .mode button[aria-pressed="true"] { background:var(--btn); color:#fff; }
+  .mode[hidden] { display:none; }
+
+  /* нижняя планка: цена и действия */
+  .bar { position:relative; z-index:3; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px 14px;
+         background:var(--white); border-top:2px dashed rgba(122,46,74,.16); padding:12px 22px 14px; }
+  .pr { display:flex; flex-direction:column; min-width:0; line-height:1.1; }
+  .pr .amt { font-size:22px; font-weight:800; color:var(--btn); letter-spacing:-.3px; white-space:nowrap; }
+  .pr small { font-family:var(--hand); font-weight:700; font-size:19px; color:var(--mute); line-height:1; white-space:nowrap; }
+  .acts { display:flex; flex-wrap:wrap; gap:10px; margin-left:auto; }
+  .acts .ic { gap:7px; }
+  .acts .ic .ico { width:19px; height:19px; color:var(--btn); }
+
+  /* панель настроек */
+  .side { min-width:0; padding-top:18px; }
+  .hello { font-family:var(--hand); font-weight:700; font-size:28px; color:var(--btn); line-height:1;
+           display:inline-flex; align-items:center; gap:8px; transform:rotate(-2deg); margin-bottom:10px; }
+  .hello .ico { width:24px; height:24px; color:var(--hot); }
+  h1 { font-size:clamp(30px, 3.6vw, 46px); font-weight:800; letter-spacing:-1px; line-height:1.08; margin-bottom:26px; }
+  h1 mark { color:inherit; background:linear-gradient(transparent 58%, var(--blush) 58%, var(--blush) 92%, transparent 92%);
+            padding:0 4px; margin:0 -4px; }
+
+  /* вкладки — пастельные стикеры */
+  .tabs { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+  .tabs button { min-height:46px; padding:8px 6px; border-radius:999px; font-weight:800; font-size:15px; line-height:1.15;
+                 background:var(--pink2); border:2px solid transparent; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+                 transition:border-color .15s ease, background-color .15s ease, color .15s ease; }
+  .tabs button:nth-child(5n+2) { background:var(--mint); }
+  .tabs button:nth-child(5n+3) { background:var(--butter); }
+  .tabs button:nth-child(5n+4) { background:var(--lilac); }
+  .tabs button:nth-child(5n+5) { background:var(--sky); }
+  .tabs button:hover { border-color:var(--hot); }
+  .tabs button[aria-selected="true"] { background:var(--btn); border-color:var(--btn); color:#fff; box-shadow:0 3px 0 var(--btn-d); }
+
+  /* карточка с опциями */
+  #panel { position:relative; margin-top:22px; background:var(--white); border-radius:24px; padding:26px 24px 28px;
+           box-shadow:var(--shadow); outline:2px dashed var(--stitch); outline-offset:-9px; min-height:240px; }
+  #panel:empty { display:none; }
+  #panel h2 { font-size:17px; font-weight:800; letter-spacing:-.1px; margin:0 0 12px; }
+  #panel h2 .cname { font-family:var(--hand); font-weight:700; font-size:23px; color:var(--btn); margin-left:2px; }
+  #panel .opts + h2, #panel .note + h2, #panel .field + h2 { margin-top:24px; }
+  .note { font-size:15px; color:var(--mute); margin-bottom:14px; line-height:1.45; }
+  .opts { display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:10px; }
+  .opts button { min-height:48px; padding:10px 16px; border-radius:24px; text-wrap:balance; font-size:15.5px; font-weight:800; line-height:1.2;
+                 background:var(--white); border:2px solid var(--blush); text-align:center;
+                 transition:border-color .15s ease, background-color .15s ease; }
+  .opts button:hover { border-color:var(--hot); background:var(--pink); }
+  .opts button[aria-pressed="true"] { background:var(--btn); border-color:var(--btn); color:#fff; }
+  /* кругляши цветов: выбранный — с белым колечком */
+  .sw { display:flex; flex-wrap:wrap; gap:12px; padding:4px 2px; }
+  .sw button { width:44px; height:44px; border-radius:50%; border:2px solid rgba(122,46,74,.18);
+               transition:transform .15s ease, box-shadow .15s ease; }
+  .sw button:hover { transform:scale(1.08); }
+  .sw button[aria-pressed="true"] { border-color:transparent; box-shadow:0 0 0 3px var(--white), 0 0 0 6px var(--btn); }
+  .field { display:block; }
+  .field span { display:block; font-size:15px; color:var(--mute); margin-bottom:8px; }
+  .field input, .field textarea { width:100%; border:2px solid var(--blush); background:var(--cream); border-radius:18px;
+          padding:12px 16px; font-size:16px; outline:none; color:var(--berry); }
+  .field input:focus, .field textarea:focus { border-color:var(--btn); }
+  .field input::placeholder, .field textarea::placeholder { color:#b07a90; }
+
+  .cta { position:relative; margin-top:30px; }
+  .btns { display:flex; flex-wrap:wrap; gap:14px; }
+  .btns .btn { flex:1 1 200px; }
+  .small { font-size:14.5px; color:var(--mute); margin-top:16px; line-height:1.5; }
+
+  details.prompt { margin-top:30px; background:var(--white); border-radius:24px; box-shadow:var(--shadow); }
+  details.prompt[open] { outline:2px dashed var(--stitch); outline-offset:-8px; }
+  details.prompt summary { list-style:none; cursor:pointer; position:relative; padding:16px 70px 16px 24px; min-height:60px;
+          font-size:16px; font-weight:800; line-height:1.35; display:flex; align-items:center; }
+  details.prompt summary::-webkit-details-marker { display:none; }
+  details.prompt summary::after { content:"+"; position:absolute; right:16px; top:50%; width:36px; height:36px; margin-top:-18px;
+          border-radius:50%; background:var(--pink2); color:var(--btn); font-size:24px; line-height:34px; text-align:center; font-weight:800; }
+  details.prompt[open] summary::after { content:"−"; background:var(--btn); color:#fff; }
+  details.prompt .in { padding:0 24px 24px; }
+  details.prompt textarea { width:100%; min-height:190px; border:2px solid var(--blush); background:var(--cream); border-radius:16px;
+          padding:12px 14px; font-size:14px; line-height:1.45; resize:vertical; font-family:Menlo, Consolas, monospace; color:var(--berry); }
+
+  /* оформление заказа — письмо в конверте */
+  #order { position:fixed; inset:0; z-index:30; overflow-y:auto; -webkit-overflow-scrolling:touch;
+           background-color:var(--pink2);
+           background-image:radial-gradient(rgba(204,66,115,.12) 2px, transparent 2.6px); background-size:26px 26px; }
+  #order[hidden] { display:none; }
+  #order .otop { position:sticky; top:0; z-index:3; display:flex; justify-content:space-between; align-items:center; gap:14px;
+                 padding:12px var(--g); background:rgba(250,223,233,.94); border-bottom:2px dashed rgba(122,46,74,.16);
+                 -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+  #order .otop .t { font-family:var(--hand); font-weight:700; font-size:26px; color:var(--btn); line-height:1; }
+  #oClose { min-height:44px; padding:0 18px; border-radius:999px; background:var(--white); border:2px solid var(--blush);
+            font-weight:800; font-size:15px; box-shadow:0 3px 0 var(--blush); }
+  #oClose:hover { border-color:var(--hot); }
+  .letter { position:relative; max-width:720px; margin:34px auto 56px; border-radius:30px; padding:60px 40px 36px;
+            border:10px solid transparent;
+            background:linear-gradient(var(--cream), var(--cream)) padding-box,
+                       repeating-linear-gradient(-45deg, var(--hot) 0 14px, var(--white) 14px 22px, #8fc0e6 22px 36px, var(--white) 36px 44px) border-box;
+            box-shadow:0 22px 40px -22px rgba(122,46,74,.45); }
+  .letter::before { content:""; position:absolute; left:0; right:0; top:0; height:52px; background:var(--pink);
+                    clip-path:polygon(0 0, 100% 0, 50% 100%); opacity:.85; border-radius:20px 20px 0 0; pointer-events:none; }
+  .letter h2 { position:relative; font-size:clamp(28px, 5vw, 40px); font-weight:800; letter-spacing:-.8px; line-height:1.08; text-transform:lowercase; }
+  .oprice { margin-top:10px; font-size:18px; font-weight:800; color:var(--btn); }
+  .letter .field { margin-top:20px; }
+  #oText { min-height:260px; font-size:14px; line-height:1.5; resize:vertical; }
+  .check { display:flex; gap:12px; align-items:center; min-height:44px; margin-top:14px; font-size:16px; font-weight:800; cursor:pointer; }
+  .check input { width:24px; height:24px; accent-color:var(--btn); flex:none; }
+  .letter .btns { margin-top:24px; }
+  .letter .sign { margin-top:20px; text-align:right; font-family:var(--hand); font-weight:700; font-size:24px; color:var(--btn); line-height:1; }
+
+  #toast { position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:40;
+           background:var(--berry); color:#fff; padding:12px 22px; border-radius:999px; font-size:15px; font-weight:800;
+           max-width:calc(100% - 32px); text-align:center; box-shadow:0 12px 26px -12px rgba(122,46,74,.6); }
+  #toast[hidden] { display:none; }
+
+  /* ---- телефоны и планшеты: превью прилипает сверху, опции ниже ---- */
+  @media (max-width:860px) {
+    :root { --g:16px; }
+    .top .wrap { height:62px; }
+    .brand .ico { width:32px; height:22px; }
+    .brand b { font-size:17px; }
+    .brand small { font-size:17px; }
+    .back { padding:8px 14px; font-size:15px; }
+    .main { display:block; padding:0 0 48px; }
+    /* превью во всю ширину; высота — по содержимому (без min-height → без пустой полосы) */
+    .stage { position:sticky; top:0; height:auto; min-height:0; border-radius:0; box-shadow:0 10px 18px -16px rgba(122,46,74,.55);
+             outline:none; border-bottom:2px dashed rgba(122,46,74,.18); }
+    .stage .view { flex:none; height:40vh; height:40svh; min-height:220px; max-height:380px; padding:16px var(--g) 10px; gap:12px; }
+    .frame { --pad:7px; --cap:30px;
+             --ih:min(100cqh - var(--pad) - var(--cap), (100cqw - 2 * var(--pad) - 124px) * 416 / 300); }
+    .frame .cap { font-size:19px; }
+    .frame .tape { width:62px; height:20px; top:-9px; }
+    /* переключатель — столбиком справа от полароида, ничего не перекрывает */
+    .ctl { position:static; flex:none; flex-direction:column; align-items:stretch; justify-content:center; gap:10px; }
+    .ctl .hnote { font-size:20px; text-align:center; }
+    .mode { flex-direction:column; border-radius:24px; }
+    .mode button { min-height:44px; padding:0 14px; font-size:14px; }
+    .bar { padding:8px var(--g) 10px; gap:8px 10px; }
+    .pr .amt { font-size:19px; }
+    .pr small { font-size:17px; }
+    .acts { gap:8px; }
+    .acts .btn.sm { padding:6px 16px; font-size:15px; }
+    .side { padding:26px var(--g) 0; }
+    .hello { font-size:24px; }
+    h1 { font-size:28px; margin-bottom:20px; }
+    .tabs { gap:8px; }
+    .tabs button { font-size:14px; padding:8px 4px; }
+    #panel { margin-top:18px; padding:22px 18px 24px; min-height:0; }
+    .opts { grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; }
+    .opts button { font-size:15px; padding:10px 10px; }
+    .sw { gap:12px; }
+    .btns .btn { flex-basis:100%; }
+    #order .otop { padding:10px var(--g); }
+    .letter { margin:22px var(--g) 40px; padding:50px 18px 24px; border-width:8px; border-radius:24px; }
+    .letter::before { height:38px; }
+  }
+  @media (max-width:520px) {
+    /* «Случайно» и «Сброс» — круглые кнопки-иконки, подпись остаётся для скринридеров */
+    .acts .ic { width:46px; padding:0 !important; }
+    .acts .ic .ico { width:21px; height:21px; }
+    .acts .ic .lbl { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; }
+  }
+  @media (max-width:360px) {
+    .brand small { display:none; }
+    .tabs button { font-size:13px; }
+    .acts .btn.sm.solid { padding:6px 12px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition:none !important; animation:none !important; }
+    .btn:hover, .btn:active, .sw button:hover { transform:none; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-bow" viewBox="0 0 64 42">
+    <path fill="currentColor" d="M32 18C24 6 8 0 4 9c-4 9 10 17 28 11zM32 18C40 6 56 0 60 9c4 9-10 17-28 11z"/>
+    <path fill="currentColor" opacity=".8" d="M30 21l-9 19 6-2 4 4 2-20zM34 21l9 19-6-2-4 4-2-20z"/>
+    <path d="M10 9c2-3 8-2 14 3M54 9c-2-3-8-2-14 3" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>
+    <circle cx="32" cy="19" r="5.5" fill="#cc4273"/>
+  </symbol>
+  <symbol id="i-flower" viewBox="0 0 24 24">
+    <g fill="currentColor"><circle cx="12" cy="5.5" r="4.5"/><circle cx="18.2" cy="10" r="4.5"/><circle cx="15.8" cy="17.3" r="4.5"/><circle cx="8.2" cy="17.3" r="4.5"/><circle cx="5.8" cy="10" r="4.5"/></g>
+    <circle cx="12" cy="12" r="3.6" fill="#f8d36e"/>
+  </symbol>
+  <symbol id="i-dice" viewBox="0 0 24 24">
+    <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2.2"/>
+    <g fill="currentColor"><circle cx="8.3" cy="8.3" r="1.7"/><circle cx="15.7" cy="8.3" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="8.3" cy="15.7" r="1.7"/><circle cx="15.7" cy="15.7" r="1.7"/></g>
+  </symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24">
+    <path d="M4.5 12a7.5 7.5 0 1 0 2.4-5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M6.2 2.8v4.4h4.4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="index.html"><svg class="ico" aria-hidden="true"><use href="#i-bow"/></svg><span><b>Фигурки по фото</b><small>кокешики</small></span></a>
+    <a class="back" href="index.html">&#8592; Работы</a>
+  </div>
+</header>
+
+<div class="main wrap">
+  <section class="stage" aria-label="Предпросмотр фигурки">
+    <div class="view">
+      <div class="frame">
+        <span class="tape" aria-hidden="true"></span>
+        <div class="shot">
+          <svg id="fig" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Фигурка"></svg>
+          <canvas id="paint" width="300" height="416" role="img" aria-label="Фигурка, рисунок" hidden></canvas>
+        </div>
+        <p class="cap" aria-hidden="true">моя фигурка ♡</p>
+      </div>
+      <div class="ctl">
+        <span class="hnote" aria-hidden="true">вид:</span>
+        <div class="mode" id="mode" role="group" aria-label="Вид превью" hidden>
+          <button type="button" data-mode="brush" aria-pressed="true">Рисунок</button>
+          <button type="button" data-mode="svg" aria-pressed="false">Схема</button>
+        </div>
+      </div>
+    </div>
+    <div class="bar">
+      <p class="pr"><span class="amt">≈ <span id="price"></span></span><small id="priceNote">ориентировочно</small></p>
+      <div class="acts">
+        <button type="button" class="btn sm ic" id="rand" title="Случайно"><svg class="ico" aria-hidden="true"><use href="#i-dice"/></svg><span class="lbl">Случайно</span></button>
+        <button type="button" class="btn sm ic" id="reset" title="Сброс"><svg class="ico" aria-hidden="true"><use href="#i-reset"/></svg><span class="lbl">Сброс</span></button>
+        <button type="button" class="btn sm solid" data-order>Заказать</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="side">
+    <p class="hello" aria-hidden="true"><svg class="ico"><use href="#i-flower"/></svg>собери себя ♡</p>
+    <h1>Собери <mark>свою</mark> фигурку</h1>
+    <div class="tabs" id="tabs" role="tablist" aria-label="Детали фигурки"></div>
+    <div id="panel" role="tabpanel"></div>
+
+    <div class="cta">
+      <div class="btns">
+        <button type="button" class="btn solid" data-order>Оформить заказ</button>
+        <button type="button" class="btn" id="png">Скачать картинку</button>
+      </div>
+      <p class="small">Это эскиз: финальную фигурку делаем на 3D-принтере и расписываем вручную по вашим фото —
+        лицо, причёску и одежду повторим ближе к оригиналу. Цена ориентировочная.</p>
+    </div>
+
+    <details class="prompt">
+      <summary>Промпт для генерации (для мастерской)</summary>
+      <div class="in">
+        <p class="small" style="margin:0 0 10px">Английский текст для генератора картинок → потом в Meshy.</p>
+        <textarea id="prompt" readonly aria-label="Промпт для генерации"></textarea>
+        <div class="btns" style="margin-top:14px"><button type="button" class="btn" id="pCopy">Скопировать промпт</button></div>
+      </div>
+    </details>
+  </section>
+</div>
+
+<div id="order" hidden role="dialog" aria-modal="true" aria-labelledby="oTitle">
+  <div class="otop">
+    <span class="t" aria-hidden="true">письмо мастеру ✉</span>
+    <button type="button" id="oClose">Закрыть ✕</button>
+  </div>
+  <div class="letter">
+    <h2 id="oTitle">Оформить заказ</h2>
+    <p class="oprice">≈ <span id="oPrice"></span></p>
+    <p class="small">Скопируйте текст и отправьте его нам в Telegram или на Авито — обсудим детали и сроки.
+      По кнопкам ниже текст копируется автоматически.</p>
+    <label class="field"><span>Комментарий (рост, повод, пожелания, срок)</span>
+      <textarea id="oComment" rows="3" placeholder="Например: подарок коллеге к 25 декабря"></textarea></label>
+    <label class="check"><input type="checkbox" id="oPhoto" checked> Пришлю фото человека в чат</label>
+    <label class="field"><span>Текст заказа</span>
+      <textarea id="oText" readonly></textarea></label>
+    <div class="btns">
+      <button type="button" class="btn solid" id="oCopy">Скопировать текст</button>
+      <a class="btn" id="oTg" href="#" target="_blank" rel="noopener">Написать в Telegram&#8599;</a>
+      <a class="btn" id="oAvito" href="#" target="_blank" rel="noopener">Открыть Авито&#8599;</a>
+    </div>
+    <p class="sign" aria-hidden="true">ждём ваше письмо ♡</p>
+  </div>
+</div>
+
+<div id="toast" hidden role="status"></div>
+
+<script src="constructor/parts.js"></script>
+<script src="constructor/brush.js"></script>
+<script src="constructor/app.js"></script>
+</body>
+</html>
